@@ -9,10 +9,9 @@
 import Foundation
 
 protocol ProductDetailPresenterProtocol:ErrorPresenter {
-    func showProductDetail(_ forProduct :Products)
-    func showVariant(selectedID:Int64,variants:  [Variants])
-    func successfullyAddedToCart()
-    func proceedWithPayment(_ defaultError: Error)
+    func showProductDetail(_ forProduct :Product)
+    func shared()
+    func copied()
 }
 
 
@@ -23,19 +22,15 @@ class ProductDetailPresenter: ProductDetailPresenterProtocol {
         viewController?.displayError(message: error)
     }
 
-    func showProductDetail(_ forProduct :Products) {
-        viewController?.displayProductDetail(forProduct)
-    }
-    
-    func showVariant(selectedID:Int64,variants: [Variants]) {
-        viewController?.updateVariantUI(selectedID: selectedID, variants: variants)
+    func showProductDetail(_ forProduct :Product) {
+        viewController?.showProductDetail(forProduct)
     }
 
-    func successfullyAddedToCart() {
-        viewController?.displaySuccessMessage(message: "Added To Cart")
+    func shared() {
+        viewController?.displaySuccessMessage(message: "Shared Successfully")
     }
-    
-    func proceedWithPayment(_ defaultError: Error){
-        viewController?.displayError(message: defaultError)
+
+    func copied() {
+        viewController?.displaySuccessMessage(message: "Copied Voucher Code")
     }
 }

@@ -16,12 +16,14 @@ class ProductDetailCoordinator: Coordinator {
     weak var parentCoordinator: MainCoordinator?
     var childCoordinators = [Coordinator]()
     var navigationController: UINavigationController
-    private var productID: Int64
+    private var product: Product!
+    private var categoryTitle: String!
     let productDetailViewController = ProductDetailViewController.storyboardViewController()
 
-    init(productID: Int64, navigationController: UINavigationController) {
+    init(product: Product, title:String, navigationController: UINavigationController) {
         self.navigationController = navigationController
-        self.productID = productID
+        self.product = product
+        self.categoryTitle = title
     }
 
     deinit {
@@ -30,7 +32,8 @@ class ProductDetailCoordinator: Coordinator {
 
     func start() {
         productDetailViewController.coordinator = self
-        productDetailViewController.productID = productID
+        productDetailViewController.product = product
+        productDetailViewController.titleString = categoryTitle
         navigationController.pushViewController(productDetailViewController, animated: true)
     }
 }

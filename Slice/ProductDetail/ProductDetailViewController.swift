@@ -8,31 +8,34 @@
 
 import UIKit
 protocol ProductDetailDisplayProtocol: DisplayLogicProtocol {
-    func displayProductDetail(_ product:Products)
-    func updateVariantUI(selectedID:Int64,variants: [Variants])
+    func showProductDetail(_ product:Product)
 }
 
 class ProductDetailViewController: UIViewController {
     weak var coordinator: ProductDetailCoordinator?
-    var interactor: ProductDetailInteractorProtocol?
-    var productID: Int64!
-    private var products: Products?
-//    private var variants: [Variants] = []
-    private var defaultSelectedVariantID: Int64?
-    
-    @IBOutlet weak var variantsStackView: UIStackView!
+    @IBOutlet weak var copyCode: UIButton!
+    @IBOutlet weak var share: UIButton!
+    @IBOutlet weak var categoryName: UILabel!
+    @IBOutlet weak var productIcon: UIImageView!
     @IBOutlet weak var priceLabel: UILabel!
-    @IBOutlet weak var taxLabel: UILabel!
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var sizeLabel: UILabel!
+    @IBOutlet weak var shortMessage: UILabel!
+    @IBOutlet weak var vocherCodeLabel: UILabel!
+    @IBOutlet weak var voucherMessage: UILabel!
+    @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var expiredIcon: UIImageView!
+    @IBOutlet weak var backGroundImage: UIImageView!
     
+    var interactor: ProductDetailInteractorProtocol?
+    var product: Product!
+    var titleString: String!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         setup()
-        interactor?.fetchProduct(id: productID)
+        interactor?.injectProduct(product)
+        interactor?.fetchProduct()
     }
     
     private func setup() {
@@ -45,69 +48,46 @@ class ProductDetailViewController: UIViewController {
     }
     
     func updateUI(){
-        titleLabel.text = products?.name
-        taxLabel.text = "Tax (\(products?.tax?.name ?? "")): \(products?.tax?.value ?? 0.0)"
-    }
-    
-    private func updateSelectedVarient(_ variant: UIView) {
-        let color: UIColor = .black
-        variant.layer.borderColor = color.cgColor
-        variant.layer.borderWidth = 1.5
-        variant.layer.cornerRadius = 8.0
-    }
-    
-    private func deSelectVarient(_ variant: UIView) {
-        let color: UIColor = .clear
-        variant.layer.borderColor = color.cgColor
-    }
-    
-    private func updateVariantUI(_ variants: [Variants]){
-        var selectedVariant: Variants?
-        let views = variantsStackView.arrangedSubviews
-        for (index,item) in variants.enumerated() {
-            views[index].isHidden = false
-            views[index].tag = Int(item.id)
-            views[index].backgroundColor = Color.name(item.color?.lowercased())
-            if defaultSelectedVariantID == item.id {
-                updateSelectedVarient(views[index])
-                selectedVariant = item
+        categoryName.text = titleString
+        expiredIcon.isHidden = !(product.isExpiringSoon ?? false)
+        priceLabel.text = product.discount
+        shortMessage.text = product.discountDesc
+        if let seller = product.seller?.lowercased() {
+            if seller == "swiggy"{
+                productIcon.image = #imageLiteral(resourceName: "SwiggyIcon")
+                let randomInt = Int.random(in: 0...1)
+                backGroundImage.image = randomInt == 0 ?  #imageLiteral(resourceName: "swiggy2") : #imageLiteral(resourceName: "swiggy1")
             }else {
-                deSelectVarient(views[index])
+                productIcon.image = #imageLiteral(resourceName: "BookMyShowIcon")
+                backGroundImage.image = #imageLiteral(resourceName: "BookMyShow")
             }
         }
-        if let selectedVariant = selectedVariant {
-            sizeLabel.text = "Size \(selectedVariant.size)"
-            priceLabel.text = "Price \(selectedVariant.price)"
-        }
+        vocherCodeLabel.text = product.voucherCode
+        voucherMessage.text = product.voucherDesc
+        dateLabel.text = product.validTill
+    }
+
+    @IBAction func share(_ sender: UIButton) {
+        interactor?.share()
+        let shareText = product.shareData
+        let vc = UIActivityViewController(activityItems: [shareText], applicationActivities: [])
+        present(vc, animated: true, completion: nil)
     }
     
-    @IBAction func addToCart(_ sender: UIButton) {
-        interactor?.addToCard(id: productID)
-    }
-    
-    @IBAction func buyNow(_ sender: Any) {
-        interactor?.buyCard(id: productID)
+    @IBAction func copyVoucher(_ sender: Any) {
+        interactor?.copyVoucher()
+        let pasteboard = UIPasteboard.general
+        pasteboard.string = product.voucherCode
     }
     
     @IBAction func back(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
     }
-    
-    @IBAction func variantSelected(_ sender: UIButton) {
-        interactor?.fetchVariant(id: Int64(sender.tag))
-    }
 }
 
 extension ProductDetailViewController: ProductDetailDisplayProtocol {
-    func displayProductDetail(_ product:Products) {
-        self.products = product
+    func showProductDetail(_ product:Product) {
+        self.product = product
         updateUI()
     }
-
-    func updateVariantUI(selectedID:Int64,variants: [Variants]) {
-//        self.variants = variants
-        self.defaultSelectedVariantID = selectedID
-        updateVariantUI(variants)
-    }
-    
 }

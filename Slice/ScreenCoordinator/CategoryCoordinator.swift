@@ -8,7 +8,7 @@
 
 import UIKit
 protocol CategoryCoordinatorDelegate: AnyObject {
-    func categoryCoordinatorDidSelected(id:Int64,coordinator: CategoryCoordinator)
+    func categoryCoordinatorDidSelected(product: Product, forTitle: String, coordinator: CategoryCoordinator)
 }
 
 class CategoryCoordinator: Coordinator {
@@ -34,7 +34,7 @@ class CategoryCoordinator: Coordinator {
 }
 
 extension CategoryCoordinator {
-    func categoryDidSelected (_ forCategoryId:Int64){
-        delegate?.categoryCoordinatorDidSelected(id: forCategoryId, coordinator: self)
+    func productDidSelected (_ product:Product,_ title:String){
+        delegate?.categoryCoordinatorDidSelected(product: product, forTitle:title, coordinator: self)
     }
 }

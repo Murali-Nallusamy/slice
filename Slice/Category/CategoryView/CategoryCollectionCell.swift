@@ -9,36 +9,30 @@
 import UIKit
 
 class CategoryCollectionCell: UICollectionViewCell {
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var bgImageView: UIImageView!
-    
-    private let dullOrangeColor = UIColor(red: 226 / 255, green: 171 / 255, blue: 81 / 255, alpha: 1)
-    /// selected cell background color
-    private let deepMarineBlueGreenColor = UIColor(red: 17 / 255, green: 45 / 255, blue: 56 / 255, alpha: 1)
-    
     static let identifier = "CategoryCollectionCell"
-
+    @IBOutlet weak var icon: UIImageView!
+    @IBOutlet weak var backGroundImage: UIImageView!
+    @IBOutlet weak var offerPriceLabel: UILabel!
+    
     class func nib() -> UINib {
         UINib.init(nibName: CategoryCollectionCell.identifier, bundle: nil)
     }
     
+    func updateSettiong(forType:Product){
+        if forType.seller?.lowercased() == "swiggy"{
+            icon.image = #imageLiteral(resourceName: "SwiggyIcon")
+            let randomInt = Int.random(in: 0...1)
+            backGroundImage.image = randomInt == 0 ?  #imageLiteral(resourceName: "swiggy2") : #imageLiteral(resourceName: "swiggy1")
+        }else {
+            icon.image = #imageLiteral(resourceName: "BookMyShowIcon")
+            backGroundImage.image = #imageLiteral(resourceName: "BookMyShow")
+        }
+        let stringArray = forType.discount?.components(separatedBy: CharacterSet.decimalDigits.inverted)
+        offerPriceLabel.text = stringArray?.first
+    }
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        bgImageView.layer.masksToBounds = false
-        bgImageView.layer.shadowColor = UIColor.black.cgColor
-        bgImageView.layer.shadowOffset = CGSize.zero
-        bgImageView.layer.shadowRadius = 2
-        bgImageView.layer.shadowOpacity = 0.2
-    }
-
-    func categorySeleccted() {
-        titleLabel.textColor = dullOrangeColor
-        bgImageView.backgroundColor = deepMarineBlueGreenColor
-    }
-    
-    func categoryUnselected() {
-        titleLabel.textColor = deepMarineBlueGreenColor
-        bgImageView.backgroundColor = .white
     }
 }

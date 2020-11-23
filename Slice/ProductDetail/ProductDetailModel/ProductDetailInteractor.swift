@@ -9,45 +9,30 @@
 import Foundation
 
 protocol ProductDetailInteractorProtocol {
-    func fetchProduct(id: Int64)
-    func fetchVariant(id: Int64)
-    func addToCard(id: Int64)
-    func buyCard(id: Int64)
+    func injectProduct(_ product:Product)
+    func fetchProduct() // id
+    func share()
+    func copyVoucher()
 }
 
 class  ProductDetailInteractor: ProductDetailInteractorProtocol {
     var presenter: ProductDetailPresenter?
-    private var variants: [Variants] = []
+    private var product: Product!
+    
+    func injectProduct(_ product:Product) {
+        self.product = product
+    }
 
-    func fetchProduct(id: Int64) {
-        if let product = LocalProductDetailWorker(productID: id).fetch() {
-            presenter?.showProductDetail(product)
-            if let variants = product.variant?.array as? [Variants]{
-                self.variants = variants
-                presenter?.showVariant(selectedID: self.variants.first?.id ?? 0, variants: variants)
-            }
-        }else {
-           let error =  NSError(domain: "Not Found", code: 000, userInfo: [ NSLocalizedDescriptionKey: "Product Not Found"])
-            presenter?.showError(error)
-        }
+    func fetchProduct() {
+        presenter?.showProductDetail(product)
     }
-    
-    func fetchVariant(id: Int64) {
-        self.variants.forEach { (item) in
-            if item.id == id {
-                presenter?.showVariant(selectedID: item.id , variants: variants)
-            }
-        }
-        
+
+    func copyVoucher(){
+        presenter?.copied()
     }
-    
-    func addToCard(id: Int64){
-        presenter?.successfullyAddedToCart()
-    }
-    
-    func buyCard(id: Int64) {
-        let error =  NSError(domain: "Payment Process Failed", code: 000, userInfo: [ NSLocalizedDescriptionKey: "Payment Process Failed"])
-        presenter?.proceedWithPayment(error)
+
+    func share() {
+        presenter?.shared()
     }
     
 }

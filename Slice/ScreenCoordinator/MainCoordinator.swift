@@ -54,7 +54,7 @@ extension MainCoordinator {
             childDidFinish(categoryViewController.coordinator)
         }
 
-        if let productViewController = fromViewController as? ProductViewController {
+        if let productViewController = fromViewController as? ProductDetailViewController {
             // We're popping a buy view controller; end its coordinator
             childDidFinish(productViewController.coordinator)
         }
@@ -70,17 +70,9 @@ extension MainCoordinator {
         categoryCoordinator.start()
         childCoordinators.append(categoryCoordinator)
     }
-
-    fileprivate func showProductList(_ id: Int64) {
-        let productoordinator = ProductCoordinator(categoryID: id, navigationController: navigationController)
-        productoordinator.delegate = self
-        productoordinator.parentCoordinator = self
-        productoordinator.start()
-        childCoordinators.append(productoordinator)
-    }
     
-    fileprivate func showProductDetail(_ id: Int64) {
-        let productDetailCoordinator = ProductDetailCoordinator(productID: id, navigationController: navigationController)
+    fileprivate func showProductDetail(_ product: Product,_ catTitle:String) {
+        let productDetailCoordinator = ProductDetailCoordinator(product: product, title: catTitle, navigationController: navigationController)
         productDetailCoordinator.parentCoordinator = self
         productDetailCoordinator.start()
         childCoordinators.append(productDetailCoordinator)
@@ -89,14 +81,14 @@ extension MainCoordinator {
 
 // MARK: - Delegate Authentication Coordinator
 extension MainCoordinator: CategoryCoordinatorDelegate {
-    func categoryCoordinatorDidSelected(id: Int64, coordinator: CategoryCoordinator) {
-       showProductList(id)
+    func categoryCoordinatorDidSelected(product: Product, forTitle title: String,  coordinator: CategoryCoordinator) {
+       showProductDetail(product,title)
     }
 }
 
 
-extension MainCoordinator: ProductCoordinatorDelegate {
-    func productCoordinatorDidSelected(id: Int64, coordinator: ProductCoordinator) {
-        showProductDetail(id)
-    }
-}
+//extension MainCoordinator: ProductCoordinatorDelegate {
+//    func productCoordinatorDidSelected(id: Int64, coordinator: ProductCoordinator) {
+//        showProductDetail(id)
+//    }
+//}

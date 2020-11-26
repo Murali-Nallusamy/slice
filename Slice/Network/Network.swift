@@ -8,9 +8,9 @@
 
 import Foundation
 
-protocol Fetchable {
-    static var apiBase: String { get }
-}
+//protocol Fetchable {
+//    static var apiBase: String { get }
+//}
 
 protocol JSONINitializer {
     init(_ data:Data)
@@ -27,7 +27,7 @@ struct Client {
 
 extension Client {
     
-    func fetch<Model: Fetchable & JSONINitializer>(_: Model.Type,completion: @escaping (Result<Model, Error>) -> Void)
+    func fetch<Model: JSONINitializer>(_: Model.Type,completion: @escaping (Result<Model, Error>) -> Void)
     {
         if let path = Bundle.main.path(forResource: "data", ofType: "json") {
             do {

@@ -13,9 +13,9 @@ struct Categories:Codable {
  
 }
 
-extension Categories: Fetchable {
-    static var apiBase: String { return Constants.extURLComponent }
-}
+//extension Categories: Fetchable {
+//    static var apiBase: String { return Constants.extURLComponent }
+//}
 
 extension Categories: JSONINitializer{
     init(_ data: Data) {
